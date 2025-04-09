@@ -1,7 +1,7 @@
 <?php
-// Basic Authentication (you can customize with real user authentication later)
-$valid_username = 'admin';  // Set a default username
-$valid_password = 'password123';  // Set a default password
+
+$valid_username = 'admin';  
+$valid_password = 'password123';  
 
 function authenticate() {
     global $valid_username, $valid_password;
@@ -22,7 +22,7 @@ function authenticate() {
     exit;
 }
 
-// Connect to the database
+
 $host = '127.0.0.1';
 $db = 'hellofresh';
 $user = 'hellofresh';
@@ -42,12 +42,12 @@ try {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-// Handle different request types
+
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $requestUri = $_SERVER["REQUEST_URI"];
 $uriParts = explode('/', $requestUri);
 
-// Apply authentication for sensitive routes (POST, PUT, DELETE)
+
 if (in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
     authenticate();
 }
@@ -56,13 +56,13 @@ if ($uriParts[1] == 'recipes') {
     switch ($requestMethod) {
         case 'GET':
             if (isset($uriParts[2])) {
-                // Fetch single recipe by ID
+   
                 $stmt = $pdo->prepare('SELECT * FROM recipes WHERE id = ?');
                 $stmt->execute([$uriParts[2]]);
                 $recipe = $stmt->fetch();
                 echo json_encode($recipe);
             } else {
-                // Fetch all recipes
+  
                 $stmt = $pdo->query('SELECT * FROM recipes');
                 $recipes = $stmt->fetchAll();
                 echo json_encode($recipes);
@@ -76,13 +76,12 @@ if ($uriParts[1] == 'recipes') {
                 break;
             }
             
-            // Debugging: Check the data being sent
+ 
             var_dump($data);
 
-            // Prepare the INSERT statement
+   
             $stmt = $pdo->prepare('INSERT INTO recipes (name, prep_time, difficulty, vegetarian) VALUES (?, ?, ?, ?)');
 
-            // Debugging: Check the SQL and data being inserted
             echo "Inserting: " . json_encode([$data['name'], $data['prep_time'], $data['difficulty'], $data['vegetarian']]);
 
             $executeResult = $stmt->execute([$data['name'], $data['prep_time'], $data['difficulty'], $data['vegetarian']]);
@@ -102,7 +101,7 @@ if ($uriParts[1] == 'recipes') {
                     break;
                 }
                 
-                // Prepare the UPDATE statement
+
                 $stmt = $pdo->prepare('UPDATE recipes SET name = ?, prep_time = ?, difficulty = ?, vegetarian = ? WHERE id = ?');
                 $stmt->execute([$data['name'], $data['prep_time'], $data['difficulty'], $data['vegetarian'], $uriParts[2]]);
                 
@@ -116,7 +115,7 @@ if ($uriParts[1] == 'recipes') {
 
         case 'DELETE':
             if (isset($uriParts[2])) {
-                // Delete the recipe by ID
+
                 $stmt = $pdo->prepare('DELETE FROM recipes WHERE id = ?');
                 $stmt->execute([$uriParts[2]]);
                 
